@@ -19,7 +19,6 @@ public class UserEntity {
 
     private String email;
 
-    @Column(name = "pass_word")
     private String password;
 
     private LocalDateTime dateOfCreation;
