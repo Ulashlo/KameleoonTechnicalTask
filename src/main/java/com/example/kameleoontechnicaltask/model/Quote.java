@@ -7,26 +7,27 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "users")
+@Table
 @Getter
 @NoArgsConstructor
-public class UserEntity {
+public class Quote {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
+    private String content;
 
-    private String email;
-
-    private String password;
+    @ManyToOne
+    @JoinColumn(name = "user_who_created_id", nullable = false)
+    private UserEntity userWhoCreated;
 
     private LocalDateTime dateOfCreation;
 
-    public UserEntity(String name, String email, String password) {
-        this.name = name;
-        this.email = email;
-        this.password = password;
+    private LocalDateTime dateOfLastUpdate;
+
+    public Quote(String content, UserEntity userWhoCreated) {
+        this.content = content;
+        this.userWhoCreated = userWhoCreated;
         this.dateOfCreation = LocalDateTime.now();
     }
 }
