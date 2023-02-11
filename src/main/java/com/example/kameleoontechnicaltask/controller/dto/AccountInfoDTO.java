@@ -2,12 +2,17 @@ package com.example.kameleoontechnicaltask.controller.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Getter
 @NoArgsConstructor
-public class UserInfoForCreateDTO {
+@AllArgsConstructor
+public class AccountInfoDTO {
     @NotBlank
     private String name;
 
@@ -16,5 +21,8 @@ public class UserInfoForCreateDTO {
     private String email;
 
     @NotBlank
-    private String password;
+    private String accessToken;
+
+    @NotNull
+    private LocalDateTime dateOfCreation;
 }

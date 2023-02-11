@@ -1,7 +1,10 @@
 package com.example.kameleoontechnicaltask.repository;
 
-import com.example.kameleoontechnicaltask.model.User;
+import com.example.kameleoontechnicaltask.model.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+import java.util.Optional;
+
+public interface UserRepository extends JpaRepository<UserEntity, Long> {
+    Optional<UserEntity> findByName(String name);
 }

@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Table(name = "users")
 @Getter
 @NoArgsConstructor
-public class User {
+public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,7 +24,7 @@ public class User {
 
     private LocalDateTime dateOfCreation;
 
-    public User(String name, String email, String password, LocalDateTime dateOfCreation) {
+    public UserEntity(String name, String email, String password, LocalDateTime dateOfCreation) {
         this.name = name;
         this.email = email;
         this.password = password;
