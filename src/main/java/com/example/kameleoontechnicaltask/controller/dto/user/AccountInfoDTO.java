@@ -1,4 +1,4 @@
-package com.example.kameleoontechnicaltask.controller.dto;
+package com.example.kameleoontechnicaltask.controller.dto.user;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

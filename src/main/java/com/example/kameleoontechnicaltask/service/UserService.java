@@ -1,7 +1,9 @@
 package com.example.kameleoontechnicaltask.service;
 
-import com.example.kameleoontechnicaltask.controller.dto.AccountInfoDTO;
-import com.example.kameleoontechnicaltask.controller.dto.UserInfoForCreateDTO;
+import com.example.kameleoontechnicaltask.controller.dto.user.AccountInfoDTO;
+import com.example.kameleoontechnicaltask.controller.dto.user.UserInfoForCreateDTO;
+import com.example.kameleoontechnicaltask.model.UserEntity;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.BadCredentialsException;
 
 import java.util.NoSuchElementException;
@@ -19,7 +21,7 @@ public interface UserService {
     AccountInfoDTO createAccount(UserInfoForCreateDTO infoForCreate);
 
     /**
-     * Generate an access token if credentials are correct
+     * Generate an access token if credentials are correct.
      *
      * @param name     user's name
      * @param password user's password
@@ -28,4 +30,12 @@ public interface UserService {
      * @throws NoSuchElementException  if there are no user with given name
      */
     AccountInfoDTO login(String name, String password);
+
+    /**
+     * Return authenticated user's info.
+     *
+     * @return user's info
+     * @throws AuthenticationCredentialsNotFoundException if there are no authenticated users
+     */
+    UserEntity getCurrentUser();
 }

@@ -19,12 +19,12 @@ CREATE TABLE IF NOT EXISTS quote
 
 CREATE TABLE IF NOT EXISTS vote
 (
-    id               BIGINT AUTO_INCREMENT PRIMARY KEY,
-    type             VARCHAR(10) NOT NULL,
+    id                  BIGINT AUTO_INCREMENT PRIMARY KEY,
+    type                VARCHAR(10) NOT NULL,
     user_who_created_id BIGINT      NOT NULL,
-    quote_id         BIGINT      NOT NULL,
-    date_of_creation TIMESTAMP   NOT NULL,
+    quote_id            BIGINT      NOT NULL,
+    date_of_creation    TIMESTAMP   NOT NULL,
     FOREIGN KEY (user_who_created_id) REFERENCES users (id),
-    FOREIGN KEY (quote_id) REFERENCES quote (id),
+    FOREIGN KEY (quote_id) REFERENCES quote (id) ON DELETE CASCADE,
     UNIQUE (user_who_created_id, quote_id)
 );

@@ -30,4 +30,9 @@ public class Quote {
         this.userWhoCreated = userWhoCreated;
         this.dateOfCreation = LocalDateTime.now();
     }
+
+    public void updateQuote(String newContent) {
+        this.content = newContent;
+        this.dateOfLastUpdate = LocalDateTime.now();
+    }
 }
