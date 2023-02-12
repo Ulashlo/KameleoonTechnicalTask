@@ -1,4 +1,4 @@
-package com.example.kameleoontechnicaltask.service;
+package com.example.kameleoontechnicaltask.service.user;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

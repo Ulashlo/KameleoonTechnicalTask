@@ -2,7 +2,7 @@ package com.example.kameleoontechnicaltask.controller;
 
 import com.example.kameleoontechnicaltask.controller.dto.user.AccountInfoDTO;
 import com.example.kameleoontechnicaltask.controller.dto.user.UserInfoForCreateDTO;
-import com.example.kameleoontechnicaltask.service.UserService;
+import com.example.kameleoontechnicaltask.service.user.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;

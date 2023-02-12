@@ -1,4 +1,4 @@
-package com.example.kameleoontechnicaltask.service;
+package com.example.kameleoontechnicaltask.service.user;
 
 import com.example.kameleoontechnicaltask.controller.dto.user.AccountInfoDTO;
 import com.example.kameleoontechnicaltask.controller.dto.user.UserInfoForCreateDTO;

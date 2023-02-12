@@ -1,4 +1,4 @@
-package com.example.kameleoontechnicaltask.service;
+package com.example.kameleoontechnicaltask.service.quote;
 
 import com.example.kameleoontechnicaltask.controller.dto.quote.QuoteInfoForCreateDTO;
 import com.example.kameleoontechnicaltask.controller.dto.quote.QuoteInfoForUpdateDTO;

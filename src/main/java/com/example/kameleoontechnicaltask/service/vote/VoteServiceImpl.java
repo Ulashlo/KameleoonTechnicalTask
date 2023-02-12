@@ -1,9 +1,10 @@
-package com.example.kameleoontechnicaltask.service;
+package com.example.kameleoontechnicaltask.service.vote;
 
 import com.example.kameleoontechnicaltask.model.Vote;
 import com.example.kameleoontechnicaltask.model.VoteType;
 import com.example.kameleoontechnicaltask.repository.QuoteRepository;
 import com.example.kameleoontechnicaltask.repository.VoteRepository;
+import com.example.kameleoontechnicaltask.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

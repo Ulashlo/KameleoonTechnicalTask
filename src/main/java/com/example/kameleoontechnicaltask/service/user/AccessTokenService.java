@@ -1,4 +1,4 @@
-package com.example.kameleoontechnicaltask.service;
+package com.example.kameleoontechnicaltask.service.user;
 
 /**
  * Service provides functionality for working with an access token

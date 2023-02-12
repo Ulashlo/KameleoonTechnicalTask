@@ -1,9 +1,11 @@
-package com.example.kameleoontechnicaltask.service;
+package com.example.kameleoontechnicaltask.service.quote;
 
 import com.example.kameleoontechnicaltask.controller.dto.quote.QuoteInfoForCreateDTO;
 import com.example.kameleoontechnicaltask.controller.dto.quote.QuoteInfoForUpdateDTO;
 import com.example.kameleoontechnicaltask.model.Quote;
 import com.example.kameleoontechnicaltask.repository.QuoteRepository;
+import com.example.kameleoontechnicaltask.service.quote.QuoteService;
+import com.example.kameleoontechnicaltask.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
