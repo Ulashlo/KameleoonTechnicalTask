@@ -25,12 +25,17 @@ public class Vote {
     @JoinColumn(name = "quote_id", nullable = false)
     private Quote quote;
 
-    private LocalDateTime dateOfCreation;
+    private LocalDateTime dateOfVoting;
 
     public Vote(VoteType type, UserEntity userWhoCreated, Quote quote) {
         this.type = type;
         this.userWhoCreated = userWhoCreated;
         this.quote = quote;
-        this.dateOfCreation = LocalDateTime.now();
+        this.dateOfVoting = LocalDateTime.now();
+    }
+
+    public void updateVote(VoteType voteType) {
+        this.type = voteType;
+        this.dateOfVoting = LocalDateTime.now();
     }
 }
