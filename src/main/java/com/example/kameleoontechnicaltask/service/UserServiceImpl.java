@@ -44,22 +44,28 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly = true)
     public AccountInfoDTO login(String name, String password) {
-        final var user = findUserByName(name);
+        final var badCredentialsException = new BadCredentialsException("Wrong login or password");
+        final var user = userRepository.findByName(name).orElseThrow(() -> badCredentialsException);
         if (passwordEncoder.matches(password, user.getPassword())) {
             return getAccountInfo(user, password);
         }
-        throw new BadCredentialsException("Wrong password!");
+        throw badCredentialsException;
     }
 
     @Override
     public UserEntity getCurrentUser() {
+        final var userNotAuthenticatedException = new AuthenticationCredentialsNotFoundException(
+            "User has not been authenticated yet"
+        );
         final var authentication =
             ofNullable(SecurityContextHolder.getContext().getAuthentication())
-                .orElseThrow(() -> new AuthenticationCredentialsNotFoundException(
-                    "User has not been authenticated yet"
-                ));
-        final var userDetails = (UserDetails) authentication.getPrincipal();
-        return findUserByName(userDetails.getUsername());
+                .orElseThrow(() -> userNotAuthenticatedException);
+        if (!(authentication.getPrincipal() instanceof final UserDetails userDetails)) {
+            throw userNotAuthenticatedException;
+        }
+        return userRepository.findByName(userDetails.getUsername()).orElseThrow(
+            () -> new NoSuchElementException(format("No user with name = %s", userDetails.getUsername()))
+        );
     }
 
     private AccountInfoDTO getAccountInfo(UserEntity user, String rawPassword) {
@@ -68,12 +74,6 @@ public class UserServiceImpl implements UserService {
             user.getEmail(),
             accessTokenService.generateAccessToken(user.getName(), rawPassword),
             user.getDateOfCreation()
-        );
-    }
-
-    private UserEntity findUserByName(String name) {
-        return userRepository.findByName(name).orElseThrow(
-            () -> new NoSuchElementException(format("No user with name = %s", name))
         );
     }
 }
