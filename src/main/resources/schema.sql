@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS quote
     user_who_created_id BIGINT       NOT NULL,
     date_of_creation    TIMESTAMP    NOT NULL,
     date_of_last_update TIMESTAMP,
+    score               INT          NOT NULL DEFAULT 0,
     FOREIGN KEY (user_who_created_id) REFERENCES users (id)
 );
 

@@ -1,6 +1,7 @@
 package com.example.kameleoontechnicaltask.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,11 +11,13 @@ import java.time.LocalDateTime;
 @Table
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 public class Vote {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     private VoteType type;
 
     @ManyToOne
@@ -31,11 +34,6 @@ public class Vote {
         this.type = type;
         this.userWhoCreated = userWhoCreated;
         this.quote = quote;
-        this.dateOfVoting = LocalDateTime.now();
-    }
-
-    public void updateVote(VoteType voteType) {
-        this.type = voteType;
         this.dateOfVoting = LocalDateTime.now();
     }
 }

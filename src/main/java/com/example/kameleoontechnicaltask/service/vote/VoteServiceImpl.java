@@ -25,17 +25,14 @@ public class VoteServiceImpl implements VoteService {
             () -> new NoSuchElementException(String.format("No quote with id = %s", quoteId))
         );
         final var user = userService.getCurrentUser();
-        final var voteOpt = voteRepository.findByUserWhoCreatedAndQuote(user, quote);
-        if (voteOpt.isEmpty()) {
-            voteRepository.saveAndFlush(
-                new Vote(voteType, user, quote)
-            );
+        final var voteOpt = voteRepository.findTopByUserWhoCreatedAndQuoteOrderByDateOfVotingDesc(user, quote);
+        if (voteOpt.isPresent() && voteOpt.orElseThrow().getType() == voteType) {
             return;
         }
-        final var vote = voteOpt.orElseThrow();
-        if (vote.getType() != voteType) {
-            vote.updateVote(voteType);
-            voteRepository.saveAndFlush(vote);
-        }
+        quote.updateScore(voteType);
+        quoteRepository.saveAndFlush(quote);
+        voteRepository.saveAndFlush(
+            new Vote(voteType, user, quote)
+        );
     }
 }
