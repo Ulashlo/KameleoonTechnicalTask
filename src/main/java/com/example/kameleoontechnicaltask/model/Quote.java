@@ -2,6 +2,7 @@ package com.example.kameleoontechnicaltask.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +16,7 @@ import static java.util.Optional.ofNullable;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class Quote {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

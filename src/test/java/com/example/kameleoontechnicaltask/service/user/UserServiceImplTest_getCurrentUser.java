@@ -66,7 +66,7 @@ class UserServiceImplTest_getCurrentUser {
     @WithMockUser(username = USERNAME)
     @DisplayName("Should return correct result")
     void shouldReturnCorrectResult() {
-        userRepository.saveAndFlush(
+        final var user = userRepository.saveAndFlush(
             aUser()
                 .withName(USERNAME)
                 .build()
@@ -76,6 +76,6 @@ class UserServiceImplTest_getCurrentUser {
 
         assertTrue(result.isPresent());
         final var currentUser = result.orElseThrow();
-        assertEquals(USERNAME, currentUser.getName());
+        assertEquals(user, currentUser);
     }
 }

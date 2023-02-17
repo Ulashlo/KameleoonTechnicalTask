@@ -54,7 +54,7 @@ class QuoteServiceImplTest_createQuote {
         assertEquals(1, quotes.size());
         final var savedQuote = quotes.get(0);
         assertEquals(content, savedQuote.getContent());
-        assertEquals(defaultUser.getId(), savedQuote.getUserWhoCreated().getId());
+        assertEquals(defaultUser, savedQuote.getUserWhoCreated());
         assertEquals(0, savedQuote.getScore());
     }
 }

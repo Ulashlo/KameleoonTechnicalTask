@@ -4,10 +4,11 @@ import java.time.LocalDateTime;
 
 public class VoteTestBuilder {
     private Long id;
-    private VoteType type;
+    private VoteType type = VoteType.UPVOTE;
     private UserEntity userWhoCreated;
     private Quote quote;
-    private LocalDateTime dateOfVoting;
+    private LocalDateTime dateOfVoting =
+        LocalDateTime.of(2022, 2, 18, 10, 10);
 
     private VoteTestBuilder() {
     }

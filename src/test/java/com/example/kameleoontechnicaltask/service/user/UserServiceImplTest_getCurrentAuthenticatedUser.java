@@ -69,7 +69,7 @@ class UserServiceImplTest_getCurrentAuthenticatedUser {
     @WithMockUser(username = USERNAME)
     @DisplayName("Should return correct result")
     void shouldReturnCorrectResult() {
-        userRepository.saveAndFlush(
+        final var user = userRepository.saveAndFlush(
             aUser()
                 .withName(USERNAME)
                 .build()
@@ -77,6 +77,6 @@ class UserServiceImplTest_getCurrentAuthenticatedUser {
 
         final var currentUser = userService.getCurrentAuthenticatedUser();
 
-        assertEquals(USERNAME, currentUser.getName());
+        assertEquals(user, currentUser);
     }
 }
