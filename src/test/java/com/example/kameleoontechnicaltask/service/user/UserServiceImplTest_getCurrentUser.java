@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ContextConfiguration(classes = UserServiceTestConfiguration.class)
 @DisplayName("UserServiceImpl: getCurrentUser unit test suit")
 class UserServiceImplTest_getCurrentUser {
-    private static final String username = "name";
+    private static final String USERNAME = "name";
 
     @Autowired
     private UserService userService;
@@ -32,7 +32,7 @@ class UserServiceImplTest_getCurrentUser {
     }
 
     @Test
-    @WithMockUser(username = username)
+    @WithMockUser(username = USERNAME)
     @DisplayName("Should throw exception if there are no user with given name")
     void shouldThrowExceptionIfThereAreNoUserWithGivenName() {
         userRepository.saveAndFlush(
@@ -53,7 +53,7 @@ class UserServiceImplTest_getCurrentUser {
     void shouldReturnEmptyValueIfThereAreNoAuthorizedUsers() {
         userRepository.saveAndFlush(
             aUser()
-                .withName(username)
+                .withName(USERNAME)
                 .build()
         );
 
@@ -63,12 +63,12 @@ class UserServiceImplTest_getCurrentUser {
     }
 
     @Test
-    @WithMockUser(username = username)
+    @WithMockUser(username = USERNAME)
     @DisplayName("Should return correct result")
     void shouldReturnCorrectResult() {
         userRepository.saveAndFlush(
             aUser()
-                .withName(username)
+                .withName(USERNAME)
                 .build()
         );
 
@@ -76,6 +76,6 @@ class UserServiceImplTest_getCurrentUser {
 
         assertTrue(result.isPresent());
         final var currentUser = result.orElseThrow();
-        assertEquals(username, currentUser.getName());
+        assertEquals(USERNAME, currentUser.getName());
     }
 }

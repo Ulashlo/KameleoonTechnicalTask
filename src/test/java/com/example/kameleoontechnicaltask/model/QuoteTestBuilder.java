@@ -4,11 +4,12 @@ import java.time.LocalDateTime;
 
 public class QuoteTestBuilder {
     private Long id;
-    private String content;
+    private String content = "content";
     private UserEntity userWhoCreated;
-    private LocalDateTime dateOfCreation;
+    private LocalDateTime dateOfCreation =
+        LocalDateTime.of(2022, 2, 17, 20, 19);
     private LocalDateTime dateOfLastUpdate;
-    private Integer score;
+    private Integer score = 0;
 
     private QuoteTestBuilder() {
     }

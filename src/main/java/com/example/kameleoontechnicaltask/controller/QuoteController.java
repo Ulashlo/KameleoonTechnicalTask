@@ -34,7 +34,7 @@ public class QuoteController {
     }
 
     @DeleteMapping("/{id}")
-    public void updateQuote(@PathVariable("id")
+    public void deleteQuote(@PathVariable("id")
                             @NotNull Long id) {
         quoteService.deleteQuote(id);
     }

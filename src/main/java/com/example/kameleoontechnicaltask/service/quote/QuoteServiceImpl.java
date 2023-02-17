@@ -4,7 +4,6 @@ import com.example.kameleoontechnicaltask.controller.dto.quote.QuoteInfoForCreat
 import com.example.kameleoontechnicaltask.controller.dto.quote.QuoteInfoForUpdateDTO;
 import com.example.kameleoontechnicaltask.model.Quote;
 import com.example.kameleoontechnicaltask.repository.QuoteRepository;
-import com.example.kameleoontechnicaltask.service.quote.QuoteService;
 import com.example.kameleoontechnicaltask.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,7 @@ public class QuoteServiceImpl implements QuoteService {
     @Override
     @Transactional
     public void createQuote(QuoteInfoForCreateDTO infoForCreate) {
-        final var user = userService.getCurrentUser();
+        final var user = userService.getCurrentAuthenticatedUser();
         quoteRepository.saveAndFlush(
             new Quote(
                 infoForCreate.getContent(),
