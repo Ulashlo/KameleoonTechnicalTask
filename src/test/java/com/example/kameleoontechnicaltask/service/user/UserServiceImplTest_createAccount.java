@@ -29,6 +29,7 @@ class UserServiceImplTest_createAccount {
 
     @BeforeEach
     void init() {
+        userRepository.deleteAll();
         when(passwordEncoder.encode(any())).thenReturn(encodedPassword);
     }
 

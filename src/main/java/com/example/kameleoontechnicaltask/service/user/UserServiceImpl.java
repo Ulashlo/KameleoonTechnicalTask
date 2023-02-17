@@ -26,7 +26,6 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final AccessTokenService accessTokenService;
 
-
     @Override
     @Transactional
     public AccountInfoDTO createAccount(UserInfoForCreateDTO infoForCreate) {
@@ -68,7 +67,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserEntity getAuthenticatedCurrentUser() {
+    public UserEntity getCurrentAuthenticatedUser() {
         return getCurrentUser().orElseThrow(
             () -> new AuthenticationCredentialsNotFoundException(
                 "User has not been authenticated yet"

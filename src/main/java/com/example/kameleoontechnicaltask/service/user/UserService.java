@@ -38,7 +38,7 @@ public interface UserService {
      * @throws AuthenticationCredentialsNotFoundException if there are no authenticated users
      * @throws NoSuchElementException                     if there are no users with name from credentials
      */
-    UserEntity getAuthenticatedCurrentUser();
+    UserEntity getCurrentAuthenticatedUser();
 
     /**
      * Return current user's info, or empty if user not authenticated.

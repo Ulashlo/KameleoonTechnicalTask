@@ -30,6 +30,7 @@ class UserServiceImplTest_login {
 
     @BeforeEach
     void init() {
+        userRepository.deleteAll();
     }
 
     @Test
