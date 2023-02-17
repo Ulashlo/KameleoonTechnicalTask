@@ -14,9 +14,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Optional;
 
 import static java.lang.String.format;
-import static java.util.Optional.ofNullable;
 
 @Service
 @RequiredArgsConstructor
@@ -53,18 +54,25 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserEntity getCurrentUser() {
-        final var userNotAuthenticatedException = new AuthenticationCredentialsNotFoundException(
-            "User has not been authenticated yet"
-        );
-        final var authentication =
-            ofNullable(SecurityContextHolder.getContext().getAuthentication())
-                .orElseThrow(() -> userNotAuthenticatedException);
-        if (!(authentication.getPrincipal() instanceof final UserDetails userDetails)) {
-            throw userNotAuthenticatedException;
+    @Transactional(readOnly = true)
+    public Optional<UserEntity> getCurrentUser() {
+        final var authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (Objects.isNull(authentication) ||
+            !(authentication.getPrincipal() instanceof final UserDetails userDetails)) {
+            return Optional.empty();
         }
-        return userRepository.findByName(userDetails.getUsername()).orElseThrow(
+        final var user = userRepository.findByName(userDetails.getUsername()).orElseThrow(
             () -> new NoSuchElementException(format("No user with name = %s", userDetails.getUsername()))
+        );
+        return Optional.of(user);
+    }
+
+    @Override
+    public UserEntity getAuthenticatedCurrentUser() {
+        return getCurrentUser().orElseThrow(
+            () -> new AuthenticationCredentialsNotFoundException(
+                "User has not been authenticated yet"
+            )
         );
     }
 

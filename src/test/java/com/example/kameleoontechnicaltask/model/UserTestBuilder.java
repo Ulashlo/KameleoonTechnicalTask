@@ -4,10 +4,11 @@ import java.time.LocalDateTime;
 
 public class UserTestBuilder {
     private Long id;
-    private String name;
-    private String email;
-    private String password;
-    private LocalDateTime dateOfCreation;
+    private String name = "name";
+    private String email = "email@mail.ru";
+    private String password = "encoded_password";
+    private LocalDateTime dateOfCreation =
+        LocalDateTime.of(2022, 2, 17, 20, 19);
 
     private UserTestBuilder() {
     }

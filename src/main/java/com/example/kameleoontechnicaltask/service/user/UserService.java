@@ -7,6 +7,7 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import org.springframework.security.authentication.BadCredentialsException;
 
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 /**
  * Service provides functionality for working with a user account
@@ -26,8 +27,7 @@ public interface UserService {
      * @param name     user's name
      * @param password user's password
      * @return user's account's info with access token
-     * @throws BadCredentialsException if password is wrong
-     * @throws NoSuchElementException  if there are no user with given name
+     * @throws BadCredentialsException if password or username is wrong
      */
     AccountInfoDTO login(String name, String password);
 
@@ -36,7 +36,15 @@ public interface UserService {
      *
      * @return user's info
      * @throws AuthenticationCredentialsNotFoundException if there are no authenticated users
-     * @throws NoSuchElementException if there are no users with given id
+     * @throws NoSuchElementException                     if there are no users with name from credentials
      */
-    UserEntity getCurrentUser();
+    UserEntity getAuthenticatedCurrentUser();
+
+    /**
+     * Return current user's info, or empty if user not authenticated.
+     *
+     * @return user's info
+     * @throws NoSuchElementException if there are no users with name from credentials
+     */
+    Optional<UserEntity> getCurrentUser();
 }
