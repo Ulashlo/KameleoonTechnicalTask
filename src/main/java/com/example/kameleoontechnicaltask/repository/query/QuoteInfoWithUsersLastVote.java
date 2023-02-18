@@ -1,6 +1,7 @@
 package com.example.kameleoontechnicaltask.repository.query;
 
-import com.example.kameleoontechnicaltask.model.VoteType;
+import com.example.kameleoontechnicaltask.controller.dto.quote.VoteType;
+import com.example.kameleoontechnicaltask.model.InnerVoteType;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -28,9 +29,11 @@ public interface QuoteInfoWithUsersLastVote {
 
     Integer getScore();
 
-    VoteType getUsersLastVoteNullable();
+    InnerVoteType getUsersLastVoteNullable();
 
-    default Optional<VoteType> getUsersLastVote() {
-        return ofNullable(getUsersLastVoteNullable());
+    default VoteType getUsersLastVoteType() {
+        return ofNullable(getUsersLastVoteNullable())
+            .map(InnerVoteType::getEquivalent)
+            .orElse(VoteType.NO_VOTE);
     }
 }

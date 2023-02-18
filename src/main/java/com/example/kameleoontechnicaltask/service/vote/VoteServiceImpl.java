@@ -1,6 +1,7 @@
 package com.example.kameleoontechnicaltask.service.vote;
 
 import com.example.kameleoontechnicaltask.controller.dto.quote.VoteType;
+import com.example.kameleoontechnicaltask.model.InnerVoteType;
 import com.example.kameleoontechnicaltask.model.Vote;
 import com.example.kameleoontechnicaltask.repository.QuoteRepository;
 import com.example.kameleoontechnicaltask.repository.VoteRepository;
@@ -26,10 +27,14 @@ public class VoteServiceImpl implements VoteService {
         );
         final var user = userService.getCurrentAuthenticatedUser();
         final var voteOpt = voteRepository.findTopByUserWhoCreatedAndQuoteOrderByDateOfVotingDesc(user, quote);
-        if (voteOpt.isPresent() && voteOpt.orElseThrow().getType().getEquivalent() == voteType) {
+        final var lastVoteType = voteOpt
+            .map(Vote::getType)
+            .map(InnerVoteType::getEquivalent)
+            .orElse(VoteType.NO_VOTE);
+        if (lastVoteType == voteType) {
             return;
         }
-        final var resultVoteType = voteType.getEquivalent(voteOpt.isEmpty());
+        final var resultVoteType = voteType.getEquivalentByLastVoteType(lastVoteType);
         quote.updateScore(resultVoteType);
         quoteRepository.saveAndFlush(quote);
         voteRepository.saveAndFlush(

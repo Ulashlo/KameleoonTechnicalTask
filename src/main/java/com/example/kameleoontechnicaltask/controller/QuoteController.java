@@ -50,4 +50,10 @@ public class QuoteController {
                          @NotNull Long id) {
         voteService.vote(id, VoteType.DOWNVOTE);
     }
+
+    @PutMapping("/{id}/noVote")
+    public void noVote(@PathVariable("id")
+                       @NotNull Long id) {
+        voteService.vote(id, VoteType.NO_VOTE);
+    }
 }

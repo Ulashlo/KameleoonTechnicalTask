@@ -34,6 +34,56 @@ class VoteRepositoryTest_findTopByUserWhoCreatedAndQuoteOrderByDateOfVotingDesc 
     }
 
     @Test
+    @DisplayName("Should return empty result if there are no votes for given quote and user")
+    void shouldReturnEmptyResultIfThereAreNoVotesForGivenQuoteAndUser() {
+        final var defaultDate = LocalDateTime.of(2022, 2, 18, 10, 10);
+        final var user1 = userRepository.saveAndFlush(
+            aUser()
+                .withName("user1")
+                .build()
+        );
+        final var user2 = userRepository.saveAndFlush(
+            aUser()
+                .withName("user2")
+                .build()
+        );
+        final var quote1 = quoteRepository.saveAndFlush(
+            aQuote()
+                .withUserWhoCreated(user1)
+                .build()
+        );
+        final var quote2 = quoteRepository.saveAndFlush(
+            aQuote()
+                .withUserWhoCreated(user1)
+                .build()
+        );
+        voteRepository.saveAllAndFlush(
+            List.of(
+                aVote()
+                    .withDateOfVoting(defaultDate)
+                    .withUserWhoCreated(user1)
+                    .withQuote(quote1)
+                    .build(),
+                aVote()
+                    .withDateOfVoting(defaultDate)
+                    .withUserWhoCreated(user2)
+                    .withQuote(quote2)
+                    .build()
+            )
+        );
+
+        final var result1Opt = voteRepository.findTopByUserWhoCreatedAndQuoteOrderByDateOfVotingDesc(
+            user2, quote1
+        );
+        final var result2Opt = voteRepository.findTopByUserWhoCreatedAndQuoteOrderByDateOfVotingDesc(
+            user1, quote2
+        );
+
+        assertTrue(result1Opt.isEmpty());
+        assertTrue(result2Opt.isEmpty());
+    }
+
+    @Test
     @DisplayName("Should return correct result")
     void shouldReturnCorrectResult() {
         final var defaultDate = LocalDateTime.of(2022, 2, 18, 10, 10);
@@ -69,7 +119,7 @@ class VoteRepositoryTest_findTopByUserWhoCreatedAndQuoteOrderByDateOfVotingDesc 
         final var lastVote = voteRepository.saveAndFlush(
             voteDraft
                 .withDateOfVoting(defaultDate.minusDays(1))
-                .withType(InnerVoteType.CHANGE_TO_DOWNVOTE)
+                .withType(InnerVoteType.UPVOTE_TO_DOWNVOTE)
                 .build()
         );
         voteRepository.saveAllAndFlush(
@@ -90,11 +140,11 @@ class VoteRepositoryTest_findTopByUserWhoCreatedAndQuoteOrderByDateOfVotingDesc 
                     .build(),
                 voteDraft
                     .withDateOfVoting(defaultDate.minusDays(4))
-                    .withType(InnerVoteType.CHANGE_TO_DOWNVOTE)
+                    .withType(InnerVoteType.UPVOTE_TO_DOWNVOTE)
                     .build(),
                 voteDraft
                     .withDateOfVoting(defaultDate.minusDays(5))
-                    .withType(InnerVoteType.CHANGE_TO_UPVOTE)
+                    .withType(InnerVoteType.DOWNVOTE_TO_UPVOTE)
                     .build()
             )
         );

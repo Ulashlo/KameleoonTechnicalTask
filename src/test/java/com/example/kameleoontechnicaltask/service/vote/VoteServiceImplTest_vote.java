@@ -87,22 +87,27 @@ class VoteServiceImplTest_vote {
         voteService.vote(defaultQuote.getId(), VoteType.DOWNVOTE);
         voteService.vote(defaultQuote.getId(), VoteType.UPVOTE);
         voteService.vote(defaultQuote.getId(), VoteType.DOWNVOTE);
-        voteService.vote(defaultQuote.getId(), VoteType.DOWNVOTE);
-        voteService.vote(defaultQuote.getId(), VoteType.DOWNVOTE);
+        voteService.vote(defaultQuote.getId(), VoteType.NO_VOTE);
         voteService.vote(defaultQuote.getId(), VoteType.UPVOTE);
+        voteService.vote(defaultQuote.getId(), VoteType.NO_VOTE);
+        voteService.vote(defaultQuote.getId(), VoteType.NO_VOTE);
+        voteService.vote(defaultQuote.getId(), VoteType.DOWNVOTE);
 
 
         final var voteList =
             voteRepository.findAll().stream()
                 .sorted(Comparator.comparing(Vote::getDateOfVoting))
                 .toList();
-        assertEquals(5, voteList.size());
+        assertEquals(8, voteList.size());
         assertEquals(InnerVoteType.UPVOTE, voteList.get(0).getType());
-        assertEquals(InnerVoteType.CHANGE_TO_DOWNVOTE, voteList.get(1).getType());
-        assertEquals(InnerVoteType.CHANGE_TO_UPVOTE, voteList.get(2).getType());
-        assertEquals(InnerVoteType.CHANGE_TO_DOWNVOTE, voteList.get(3).getType());
-        assertEquals(InnerVoteType.CHANGE_TO_UPVOTE, voteList.get(4).getType());
+        assertEquals(InnerVoteType.UPVOTE_TO_DOWNVOTE, voteList.get(1).getType());
+        assertEquals(InnerVoteType.DOWNVOTE_TO_UPVOTE, voteList.get(2).getType());
+        assertEquals(InnerVoteType.UPVOTE_TO_DOWNVOTE, voteList.get(3).getType());
+        assertEquals(InnerVoteType.DOWNVOTE_TO_NO_VOTE, voteList.get(4).getType());
+        assertEquals(InnerVoteType.UPVOTE, voteList.get(5).getType());
+        assertEquals(InnerVoteType.UPVOTE_TO_NO_VOTE, voteList.get(6).getType());
+        assertEquals(InnerVoteType.DOWNVOTE, voteList.get(7).getType());
         final var savedQuote = quoteRepository.findById(defaultQuote.getId()).orElseThrow();
-        assertEquals(1, savedQuote.getScore());
+        assertEquals(-1, savedQuote.getScore());
     }
 }
