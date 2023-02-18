@@ -1,5 +1,6 @@
 package com.example.kameleoontechnicaltask.model;
 
+import com.example.kameleoontechnicaltask.controller.dto.quote.VoteType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -46,11 +47,8 @@ public class Quote {
         this.dateOfLastUpdate = LocalDateTime.now();
     }
 
-    public void updateScore(VoteType voteType) {
-        switch (voteType) {
-            case UPVOTE -> this.score += 1;
-            case DOWNVOTE -> this.score -= 1;
-        }
+    public void updateScore(InnerVoteType voteType) {
+        this.score += voteType.getScoreDifference();
     }
 
     public Optional<LocalDateTime> getDateOfLastUpdate() {

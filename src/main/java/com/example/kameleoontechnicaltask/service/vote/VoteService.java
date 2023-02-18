@@ -1,6 +1,6 @@
 package com.example.kameleoontechnicaltask.service.vote;
 
-import com.example.kameleoontechnicaltask.model.VoteType;
+import com.example.kameleoontechnicaltask.controller.dto.quote.VoteType;
 
 import java.util.NoSuchElementException;
 

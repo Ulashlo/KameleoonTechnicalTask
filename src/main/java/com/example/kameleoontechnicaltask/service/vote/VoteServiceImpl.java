@@ -1,7 +1,7 @@
 package com.example.kameleoontechnicaltask.service.vote;
 
+import com.example.kameleoontechnicaltask.controller.dto.quote.VoteType;
 import com.example.kameleoontechnicaltask.model.Vote;
-import com.example.kameleoontechnicaltask.model.VoteType;
 import com.example.kameleoontechnicaltask.repository.QuoteRepository;
 import com.example.kameleoontechnicaltask.repository.VoteRepository;
 import com.example.kameleoontechnicaltask.service.user.UserService;
@@ -24,15 +24,16 @@ public class VoteServiceImpl implements VoteService {
         final var quote = quoteRepository.findById(quoteId).orElseThrow(
             () -> new NoSuchElementException(String.format("No quote with id = %s", quoteId))
         );
-        final var user = userService.getCurrentUser();
+        final var user = userService.getCurrentAuthenticatedUser();
         final var voteOpt = voteRepository.findTopByUserWhoCreatedAndQuoteOrderByDateOfVotingDesc(user, quote);
-        if (voteOpt.isPresent() && voteOpt.orElseThrow().getType() == voteType) {
+        if (voteOpt.isPresent() && voteOpt.orElseThrow().getType().getEquivalent() == voteType) {
             return;
         }
-        quote.updateScore(voteType);
+        final var resultVoteType = voteType.getEquivalent(voteOpt.isEmpty());
+        quote.updateScore(resultVoteType);
         quoteRepository.saveAndFlush(quote);
         voteRepository.saveAndFlush(
-            new Vote(voteType, user, quote)
+            new Vote(resultVoteType, user, quote)
         );
     }
 }

@@ -1,5 +1,6 @@
 package com.example.kameleoontechnicaltask.model;
 
+import com.example.kameleoontechnicaltask.controller.dto.quote.VoteType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -20,7 +21,7 @@ public class Vote {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    private VoteType type;
+    private InnerVoteType type;
 
     @ManyToOne
     @JoinColumn(name = "user_who_created_id", nullable = false)
@@ -32,7 +33,7 @@ public class Vote {
 
     private LocalDateTime dateOfVoting;
 
-    public Vote(VoteType type, UserEntity userWhoCreated, Quote quote) {
+    public Vote(InnerVoteType type, UserEntity userWhoCreated, Quote quote) {
         this.type = type;
         this.userWhoCreated = userWhoCreated;
         this.quote = quote;

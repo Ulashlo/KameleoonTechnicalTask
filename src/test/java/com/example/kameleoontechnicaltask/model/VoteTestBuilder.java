@@ -1,10 +1,14 @@
 package com.example.kameleoontechnicaltask.model;
 
+import com.example.kameleoontechnicaltask.controller.dto.quote.VoteType;
+
 import java.time.LocalDateTime;
+
+import static com.example.kameleoontechnicaltask.model.InnerVoteType.UPVOTE;
 
 public class VoteTestBuilder {
     private Long id;
-    private VoteType type = VoteType.UPVOTE;
+    private InnerVoteType type = UPVOTE;
     private UserEntity userWhoCreated;
     private Quote quote;
     private LocalDateTime dateOfVoting =
@@ -31,7 +35,7 @@ public class VoteTestBuilder {
         return copy;
     }
 
-    public VoteTestBuilder withType(VoteType type) {
+    public VoteTestBuilder withType(InnerVoteType type) {
         final var copy = new VoteTestBuilder(this);
         copy.type = type;
         return copy;

@@ -2,7 +2,7 @@ package com.example.kameleoontechnicaltask.controller;
 
 import com.example.kameleoontechnicaltask.controller.dto.quote.QuoteInfoForCreateDTO;
 import com.example.kameleoontechnicaltask.controller.dto.quote.QuoteInfoForUpdateDTO;
-import com.example.kameleoontechnicaltask.model.VoteType;
+import com.example.kameleoontechnicaltask.controller.dto.quote.VoteType;
 import com.example.kameleoontechnicaltask.service.quote.QuoteService;
 import com.example.kameleoontechnicaltask.service.vote.VoteService;
 import jakarta.validation.Valid;
