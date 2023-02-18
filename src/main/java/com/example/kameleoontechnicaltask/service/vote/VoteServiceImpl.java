@@ -34,7 +34,15 @@ public class VoteServiceImpl implements VoteService {
         if (lastVoteType == voteType) {
             return;
         }
-        final var resultVoteType = voteType.getEquivalentByLastVoteType(lastVoteType);
+        final var resultVoteType = voteType.getEquivalentByLastVoteType(lastVoteType).orElseThrow(
+            () -> new IllegalStateException(
+                String.format(
+                    "Impossible to change vote status form %s to %s",
+                    lastVoteType.name(),
+                    voteType.name()
+                )
+            )
+        );
         quote.updateScore(resultVoteType);
         quoteRepository.saveAndFlush(quote);
         voteRepository.saveAndFlush(

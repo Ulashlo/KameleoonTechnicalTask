@@ -25,16 +25,16 @@ public class QuoteViewController {
 
     @GetMapping("/top")
     public List<QuoteDTO> getTopQuotes() {
-        return quoteViewService.getTopQuotes();
+        return quoteViewService.getTopQuotes(10);
     }
 
     @GetMapping("/flop")
     public List<QuoteDTO> getFlopQuotes() {
-        return quoteViewService.getFlopQuotes();
+        return quoteViewService.getFlopQuotes(10);
     }
 
     @GetMapping("/last")
     public List<QuoteDTO> getLastQuotes() {
-        return quoteViewService.getFlopQuotes();
+        return quoteViewService.getLastQuotes(10);
     }
 }

@@ -1,18 +1,27 @@
-package com.example.kameleoontechnicaltask.repository;
+package com.example.kameleoontechnicaltask.service.quote;
 
+import com.example.kameleoontechnicaltask.controller.dto.quote.QuoteDTO;
+import com.example.kameleoontechnicaltask.controller.dto.quote.VoteScoreDTO;
 import com.example.kameleoontechnicaltask.controller.dto.quote.VoteType;
 import com.example.kameleoontechnicaltask.model.InnerVoteType;
 import com.example.kameleoontechnicaltask.model.Quote;
 import com.example.kameleoontechnicaltask.model.UserEntity;
-import com.example.kameleoontechnicaltask.repository.query.QuoteInfoWithUsersLastVote;
+import com.example.kameleoontechnicaltask.repository.QuoteRepository;
+import com.example.kameleoontechnicaltask.repository.UserRepository;
+import com.example.kameleoontechnicaltask.repository.VoteRepository;
+import com.example.kameleoontechnicaltask.service.user.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.ContextConfiguration;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static com.example.kameleoontechnicaltask.model.QuoteTestBuilder.aQuote;
 import static com.example.kameleoontechnicaltask.model.UserTestBuilder.aUser;
@@ -20,14 +29,19 @@ import static com.example.kameleoontechnicaltask.model.VoteTestBuilder.aVote;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest(showSql = false)
-@DisplayName("QuoteRepository: findQuotesInfoWithUsersLastVoteByIds unit test suit")
-class QuoteRepositoryTest_findQuotesInfoWithUsersLastVoteByIds {
+@ContextConfiguration(classes = QuoteViewServiceTestConfiguration.class)
+@DisplayName("QuoteViewServiceImpl: getTopQuotes unit test suit")
+class QuoteViewServiceImplTest_getTopQuotes {
     @Autowired
     private QuoteRepository quoteRepository;
     @Autowired
     private UserRepository userRepository;
     @Autowired
     private VoteRepository voteRepository;
+    @Autowired
+    private QuoteViewService quoteViewService;
+    @Autowired
+    private UserService userService;
 
     private UserEntity defaultUser;
     private LocalDateTime defaultDate;
@@ -38,7 +52,8 @@ class QuoteRepositoryTest_findQuotesInfoWithUsersLastVoteByIds {
         quoteRepository.deleteAll();
         userRepository.deleteAll();
         defaultUser = userRepository.saveAndFlush(aUser().build());
-        defaultDate = LocalDateTime.of(2022, 2, 18, 16, 11);
+        defaultDate = LocalDateTime.now();
+        Mockito.when(userService.getCurrentUser()).thenReturn(Optional.of(defaultUser));
     }
 
     @Test
@@ -59,7 +74,7 @@ class QuoteRepositoryTest_findQuotesInfoWithUsersLastVoteByIds {
             .withDateOfCreation(defaultDate);
         final var quote1 = quoteRepository.saveAndFlush(
             quoteDraft
-                .withScore(2)
+                .withScore(1)
                 .build()
         );
         final var quote2 = quoteRepository.saveAndFlush(
@@ -91,114 +106,70 @@ class QuoteRepositoryTest_findQuotesInfoWithUsersLastVoteByIds {
                     .withDateOfVoting(defaultDate)
                     .withUserWhoCreated(user1)
                     .build(),
-                vote1Draft
-                    .withType(InnerVoteType.UPVOTE)
-                    .withDateOfVoting(defaultDate.minusDays(1))
-                    .withUserWhoCreated(user2)
-                    .build(),
                 vote2Draft
                     .withType(InnerVoteType.UPVOTE)
                     .withDateOfVoting(defaultDate.minusDays(5))
-                    .withUserWhoCreated(user1)
+                    .withUserWhoCreated(defaultUser)
+                    .build(),
+                vote2Draft
+                    .withType(InnerVoteType.UPVOTE_TO_NO_VOTE)
+                    .withDateOfVoting(defaultDate.minusDays(3))
+                    .withUserWhoCreated(defaultUser)
                     .build(),
                 vote2Draft
                     .withType(InnerVoteType.UPVOTE)
-                    .withDateOfVoting(defaultDate.minusDays(3))
-                    .withUserWhoCreated(user2)
+                    .withDateOfVoting(defaultDate.minusDays(2))
+                    .withUserWhoCreated(defaultUser)
                     .build(),
-                vote3Draft
+                vote2Draft
                     .withType(InnerVoteType.UPVOTE)
-                    .withDateOfVoting(defaultDate.minusDays(5))
-                    .withUserWhoCreated(user1)
-                    .build(),
-                vote3Draft
-                    .withType(InnerVoteType.UPVOTE_TO_DOWNVOTE)
-                    .withDateOfVoting(defaultDate.minusDays(4))
-                    .withUserWhoCreated(user1)
-                    .build(),
-                vote3Draft
-                    .withType(InnerVoteType.DOWNVOTE_TO_NO_VOTE)
-                    .withDateOfVoting(defaultDate.minusDays(3))
+                    .withDateOfVoting(defaultDate.minusDays(2))
                     .withUserWhoCreated(user1)
                     .build(),
                 vote3Draft
                     .withType(InnerVoteType.DOWNVOTE)
                     .withDateOfVoting(defaultDate.minusDays(2))
-                    .withUserWhoCreated(user2)
+                    .withUserWhoCreated(user1)
                     .build(),
                 vote4Draft
                     .withType(InnerVoteType.DOWNVOTE)
-                    .withDateOfVoting(defaultDate)
-                    .withUserWhoCreated(user2)
+                    .withDateOfVoting(defaultDate.minusDays(2))
+                    .withUserWhoCreated(user1)
                     .build()
             )
         );
 
-        final var result = quoteRepository.findQuotesInfoWithUsersLastVoteByIds(
-            List.of(quote2.getId(), quote3.getId(), quote4.getId()),
-            user1.getId()
-        );
+        final var result = quoteViewService.getTopQuotes(2);
 
-        assertEquals(3, result.size());
-        checkQuoteInfo(
-            result,
-            quote2,
-            VoteType.UPVOTE
-        );
-        checkQuoteInfo(
-            result,
-            quote3,
-            VoteType.NO_VOTE
-        );
-        checkQuoteInfo(
-            result,
-            quote4,
-            VoteType.NO_VOTE
-        );
+        assertEquals(2, result.size());
+
+        final var first = result.get(0);
+        final var second = result.get(1);
+        checkQuoteInfo(second, quote1, VoteType.NO_VOTE);
+        checkQuoteInfo(first, quote2, VoteType.UPVOTE);
+        final var firstScoreChangeDynamics = first.getScoreChangeDynamics();
+        final var secondScoreChangeDynamics = second.getScoreChangeDynamics();
+        assertEquals(1, secondScoreChangeDynamics.size());
+        assertEquals(6, firstScoreChangeDynamics.size());
+        checkQuoteDateScore(secondScoreChangeDynamics.get(0), defaultDate.toLocalDate(), 1);
+        checkQuoteDateScore(firstScoreChangeDynamics.get(0), defaultDate.minusDays(5).toLocalDate(), 1);
+        checkQuoteDateScore(firstScoreChangeDynamics.get(1), defaultDate.minusDays(4).toLocalDate(), 1);
+        checkQuoteDateScore(firstScoreChangeDynamics.get(2), defaultDate.minusDays(3).toLocalDate(), 0);
+        checkQuoteDateScore(firstScoreChangeDynamics.get(3), defaultDate.minusDays(2).toLocalDate(), 2);
+        checkQuoteDateScore(firstScoreChangeDynamics.get(4), defaultDate.minusDays(1).toLocalDate(), 2);
+        checkQuoteDateScore(firstScoreChangeDynamics.get(5), defaultDate.toLocalDate(), 2);
     }
 
-    @Test
-    @DisplayName("Should return result with no vote if user id is null")
-    void shouldReturnResultWithNoVoteIfUserIdIsNull() {
-        final var quote = quoteRepository.saveAndFlush(
-            aQuote()
-                .withUserWhoCreated(defaultUser)
-                .withDateOfCreation(defaultDate)
-                .withScore(2)
-                .build()
-        );
-
-        voteRepository.saveAndFlush(
-            aVote()
-                .withQuote(quote)
-                .withType(InnerVoteType.UPVOTE)
-                .withDateOfVoting(defaultDate)
-                .withUserWhoCreated(defaultUser)
-                .build()
-        );
-
-        final var result = quoteRepository.findQuotesInfoWithUsersLastVoteByIds(
-            List.of(quote.getId()),
-            null
-        );
-
-        assertEquals(1, result.size());
-        checkQuoteInfo(
-            result,
-            quote,
-            VoteType.NO_VOTE
-        );
+    private void checkQuoteInfo(QuoteDTO quoteDTO, Quote quote, VoteType usersVoteType) {
+        assertEquals(quote.getId(), quoteDTO.getId());
+        assertEquals(quote.getScore(), quoteDTO.getScore());
+        assertEquals(quote.getContent(), quoteDTO.getContent());
+        assertEquals(quote.getUserWhoCreated().getId(), quoteDTO.getUserWhoCreated().getId());
+        assertEquals(usersVoteType, quoteDTO.getUsersVoteType());
     }
 
-    private void checkQuoteInfo(List<QuoteInfoWithUsersLastVote> result, Quote quote, VoteType lastVoteType) {
-        final var info = result.stream()
-            .filter(q -> q.getId().equals(quote.getId()))
-            .findFirst()
-            .orElseThrow();
-        assertEquals(quote.getId(), info.getId());
-        assertEquals(quote.getContent(), info.getContent());
-        assertEquals(quote.getScore(), info.getScore());
-        assertEquals(quote.getUserWhoCreated().getId(), info.getUserWhoCreatedId());
-        assertEquals(lastVoteType, info.getUsersLastVoteType());
+    private void checkQuoteDateScore(VoteScoreDTO voteScoreDTO, LocalDate date, Integer score) {
+        assertEquals(score, voteScoreDTO.getScore());
+        assertEquals(date, voteScoreDTO.getDate());
     }
 }

@@ -11,7 +11,7 @@ import java.util.List;
  */
 public interface QuoteViewService {
     /**
-     * Find and return a random quote.
+     * Find and return a random quote, or empty if there are no quotes yet.
      *
      * @return a random {@linkplain Quote}
      */
@@ -22,19 +22,19 @@ public interface QuoteViewService {
      *
      * @return list of top {@linkplain Quote}
      */
-    List<QuoteDTO> getTopQuotes();
+    List<QuoteDTO> getTopQuotes(Integer limit);
 
     /**
      * Find and return flop quotes.
      *
      * @return list of flop {@linkplain Quote}
      */
-    List<QuoteDTO> getFlopQuotes();
+    List<QuoteDTO> getFlopQuotes(Integer limit);
 
     /**
      * Find and return last quotes.
      *
      * @return list of last {@linkplain Quote}
      */
-    List<QuoteDTO> getLastQuotes();
+    List<QuoteDTO> getLastQuotes(Integer limit);
 }

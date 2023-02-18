@@ -49,8 +49,8 @@ public interface QuoteRepository extends JpaRepository<Quote, Long> {
             "                 where vote.user_who_created_id = :user_id) users_votes " +
             "           on users_votes.quote_id = quote.id " +
             "      where quote.id in :ids) " +
-            "where rn = 1 " +
-            "   or usersLastVoteNullable is null",
+            "where rn = 1 or usersLastVoteNullable is null " +
+            "order by score desc ",
         nativeQuery = true
     )
     List<QuoteInfoWithUsersLastVote> findQuotesInfoWithUsersLastVoteByIds(

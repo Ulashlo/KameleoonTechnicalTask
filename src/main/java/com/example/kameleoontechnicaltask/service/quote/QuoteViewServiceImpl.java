@@ -2,10 +2,9 @@ package com.example.kameleoontechnicaltask.service.quote;
 
 import com.example.kameleoontechnicaltask.controller.dto.quote.QuoteDTO;
 import com.example.kameleoontechnicaltask.controller.dto.quote.RandomQuoteResponseDTO;
-import com.example.kameleoontechnicaltask.controller.dto.quote.UsersVote;
 import com.example.kameleoontechnicaltask.controller.dto.quote.VoteScoreDTO;
 import com.example.kameleoontechnicaltask.controller.dto.user.UserLinkDTO;
-import com.example.kameleoontechnicaltask.model.VoteType;
+import com.example.kameleoontechnicaltask.model.UserEntity;
 import com.example.kameleoontechnicaltask.repository.QuoteRepository;
 import com.example.kameleoontechnicaltask.repository.query.QuoteInfoWithUsersLastVote;
 import com.example.kameleoontechnicaltask.repository.query.QuoteScoreGroupByDate;
@@ -14,9 +13,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,7 +28,7 @@ public class QuoteViewServiceImpl implements QuoteViewService {
     @Override
     @Transactional(readOnly = true)
     public RandomQuoteResponseDTO getRandomQuote() {
-        final var randomQuoteId = quoteRepository.getRandomQuoteId();
+        final var randomQuoteId = quoteRepository.findRandomQuoteId();
         if (randomQuoteId.isEmpty()) {
             return RandomQuoteResponseDTO.createEmptyResponse();
         }
@@ -42,42 +42,52 @@ public class QuoteViewServiceImpl implements QuoteViewService {
     }
 
     @Override
-    public List<QuoteDTO> getTopQuotes() {
-        final var topQuoteIds = quoteRepository.getTopQuoteIds(10);
-        return getQuoteDTOListByIds(topQuoteIds);
+    @Transactional(readOnly = true)
+    public List<QuoteDTO> getTopQuotes(Integer limit) {
+        final var topQuoteIds = quoteRepository.findTopQuoteIds(limit);
+        return getQuoteDTOListByIds(topQuoteIds).stream()
+            .sorted(Comparator.comparing(QuoteDTO::getScore).reversed())
+            .toList();
     }
 
     @Override
-    public List<QuoteDTO> getFlopQuotes() {
-        final var flopQuoteIds = quoteRepository.getFlopQuoteIds(10);
-        return getQuoteDTOListByIds(flopQuoteIds);
+    @Transactional(readOnly = true)
+    public List<QuoteDTO> getFlopQuotes(Integer limit) {
+        final var flopQuoteIds = quoteRepository.findFlopQuoteIds(limit);
+        return getQuoteDTOListByIds(flopQuoteIds).stream()
+            .sorted(Comparator.comparing(QuoteDTO::getScore))
+            .toList();
     }
 
     @Override
-    public List<QuoteDTO> getLastQuotes() {
-        final var lastQuoteIds = quoteRepository.getLastQuoteIds(10);
-        return getQuoteDTOListByIds(lastQuoteIds);
+    @Transactional(readOnly = true)
+    public List<QuoteDTO> getLastQuotes(Integer limit) {
+        final var lastQuoteIds = quoteRepository.findLastQuoteIds(limit);
+        return getQuoteDTOListByIds(lastQuoteIds).stream()
+            .sorted(Comparator.comparing(QuoteDTO::getDateOfCreation).reversed())
+            .toList();
     }
 
     private List<QuoteDTO> getQuoteDTOListByIds(List<Long> ids) {
-        final var currentUserId = userService.getCurrentUser().getId();
-        final var quoteInfoWithUsersLastVotes = quoteRepository.getQuotesInfoWithUsersLastVoteByIds(
+        final var currentUserId = userService.getCurrentUser().map(UserEntity::getId).orElse(null);
+        final var quoteInfoWithUsersLastVotes = quoteRepository.findQuotesInfoWithUsersLastVoteByIds(
             ids,
             currentUserId
         );
-        final var quoteScoreGroupByDates = quoteRepository.getQuotesScoreByIds(ids);
+        final var quoteScoreGroupByDates = quoteRepository.findQuotesScoreByIds(ids);
         final var quotesScoreMap = quoteScoreGroupByDates.stream()
             .collect(Collectors.groupingBy(QuoteScoreGroupByDate::getId));
         return quoteInfoWithUsersLastVotes.stream()
             .map(info -> {
-                final var scores = quotesScoreMap.get(info.getId());
+                final var scores = quotesScoreMap.get(info.getId()).stream()
+                    .sorted(Comparator.comparing(QuoteScoreGroupByDate::getDate))
+                    .toList();
                 return createQuoteDTO(info, scores);
             }).collect(Collectors.toList());
     }
 
     private QuoteDTO createQuoteDTO(QuoteInfoWithUsersLastVote quoteInfoWithUsersLastVotes,
                                     List<QuoteScoreGroupByDate> quoteScoreGroupByDates) {
-
         return new QuoteDTO(
             quoteInfoWithUsersLastVotes.getId(),
             quoteInfoWithUsersLastVotes.getContent(),
@@ -89,9 +99,7 @@ public class QuoteViewServiceImpl implements QuoteViewService {
             quoteInfoWithUsersLastVotes.getDateOfCreation(),
             quoteInfoWithUsersLastVotes.getDateOfLastUpdate().orElse(null),
             quoteInfoWithUsersLastVotes.getScore(),
-            getUsersVote(
-                quoteInfoWithUsersLastVotes.getUsersLastVote()
-            ),
+            quoteInfoWithUsersLastVotes.getUsersLastVoteType(),
             createVoteScoreList(quoteScoreGroupByDates)
         );
     }
@@ -99,7 +107,7 @@ public class QuoteViewServiceImpl implements QuoteViewService {
     private List<VoteScoreDTO> createVoteScoreList(List<QuoteScoreGroupByDate> quoteScoreGroupByDates) {
         final var voteScoreList = new ArrayList<VoteScoreDTO>();
         for (int i = 0; i < quoteScoreGroupByDates.size(); i++) {
-            final var previousScore = i > 0 ? quoteScoreGroupByDates.get(i - 1).getScore() : 0;
+            final var previousScore = i > 0 ? voteScoreList.get(voteScoreList.size() - 1).getScore() : 0;
             final var currentScore = quoteScoreGroupByDates.get(i).getScore() + previousScore;
             var currentDate = quoteScoreGroupByDates.get(i).getDate();
             voteScoreList.add(
@@ -108,10 +116,10 @@ public class QuoteViewServiceImpl implements QuoteViewService {
                     currentDate
                 )
             );
-            if (i == quoteScoreGroupByDates.size() - 1) {
-                break;
-            }
-            final var nextDate = quoteScoreGroupByDates.get(i + 1).getDate();
+            final var nextDate =
+                i < quoteScoreGroupByDates.size() - 1 ?
+                    quoteScoreGroupByDates.get(i + 1).getDate() :
+                    LocalDate.now().plusDays(1);
             currentDate = currentDate.plusDays(1);
             while (currentDate.isBefore(nextDate)) {
                 voteScoreList.add(
@@ -120,17 +128,9 @@ public class QuoteViewServiceImpl implements QuoteViewService {
                         currentDate
                     )
                 );
+                currentDate = currentDate.plusDays(1);
             }
         }
         return voteScoreList;
-    }
-
-    private UsersVote getUsersVote(Optional<VoteType> usersLastVote) {
-        return usersLastVote.map(
-            voteType -> switch (voteType) {
-                case UPVOTE -> UsersVote.UPVOTE;
-                case DOWNVOTE -> UsersVote.DOWNVOTE;
-            }
-        ).orElse(UsersVote.NO_VOTE);
     }
 }

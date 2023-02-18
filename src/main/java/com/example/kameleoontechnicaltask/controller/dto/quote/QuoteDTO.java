@@ -37,7 +37,7 @@ public class QuoteDTO {
     private Integer score;
 
     @NotNull
-    private UsersVote usersVote;
+    private VoteType usersVoteType;
 
     @NotNull
     private List<VoteScoreDTO> scoreChangeDynamics;
