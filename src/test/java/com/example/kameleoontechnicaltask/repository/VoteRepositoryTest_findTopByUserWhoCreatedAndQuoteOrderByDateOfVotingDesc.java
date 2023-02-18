@@ -1,6 +1,6 @@
 package com.example.kameleoontechnicaltask.repository;
 
-import com.example.kameleoontechnicaltask.model.VoteType;
+import com.example.kameleoontechnicaltask.model.InnerVoteType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -69,7 +69,7 @@ class VoteRepositoryTest_findTopByUserWhoCreatedAndQuoteOrderByDateOfVotingDesc 
         final var lastVote = voteRepository.saveAndFlush(
             voteDraft
                 .withDateOfVoting(defaultDate.minusDays(1))
-                .withType(VoteType.DOWNVOTE)
+                .withType(InnerVoteType.CHANGE_TO_DOWNVOTE)
                 .build()
         );
         voteRepository.saveAllAndFlush(
@@ -86,15 +86,15 @@ class VoteRepositoryTest_findTopByUserWhoCreatedAndQuoteOrderByDateOfVotingDesc 
                     .build(),
                 voteDraft
                     .withDateOfVoting(defaultDate.minusDays(2))
-                    .withType(VoteType.UPVOTE)
+                    .withType(InnerVoteType.UPVOTE)
                     .build(),
                 voteDraft
                     .withDateOfVoting(defaultDate.minusDays(4))
-                    .withType(VoteType.DOWNVOTE)
+                    .withType(InnerVoteType.CHANGE_TO_DOWNVOTE)
                     .build(),
                 voteDraft
                     .withDateOfVoting(defaultDate.minusDays(5))
-                    .withType(VoteType.UPVOTE)
+                    .withType(InnerVoteType.CHANGE_TO_UPVOTE)
                     .build()
             )
         );
