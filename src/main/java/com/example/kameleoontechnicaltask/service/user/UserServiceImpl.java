@@ -26,10 +26,12 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AccessTokenService accessTokenService;
+    private final UserConstraintService userConstraintService;
 
     @Override
     @Transactional
     public AccountInfoDTO createAccount(UserInfoForCreateDTO infoForCreate) {
+        userConstraintService.checkUserAccountCreate(infoForCreate);
         final var user = userRepository.saveAndFlush(
             new UserEntity(
                 infoForCreate.getName(),

@@ -14,14 +14,19 @@ public class UserServiceTestConfiguration {
     @MockBean
     public AccessTokenService accessTokenService;
 
+    @MockBean
+    public UserConstraintService userConstraintService;
+
     @Bean
     public UserService userService(UserRepository userRepository,
                                    PasswordEncoder passwordEncoder,
-                                   AccessTokenService accessTokenService) {
+                                   AccessTokenService accessTokenService,
+                                   UserConstraintService userConstraintService) {
         return new UserServiceImpl(
             userRepository,
             passwordEncoder,
-            accessTokenService
+            accessTokenService,
+            userConstraintService
         );
     }
 }

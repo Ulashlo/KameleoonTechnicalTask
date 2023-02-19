@@ -1,6 +1,7 @@
 package com.example.kameleoontechnicaltask.service.user;
 
 import com.example.kameleoontechnicaltask.controller.dto.user.UserInfoForCreateDTO;
+import com.example.kameleoontechnicaltask.exceprion.CustomConstraintViolationException;
 import com.example.kameleoontechnicaltask.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -10,10 +11,9 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @DataJpaTest(showSql = false)
 @ContextConfiguration(classes = UserServiceTestConfiguration.class)
@@ -25,6 +25,9 @@ class UserServiceImplTest_createAccount {
     private UserRepository userRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private UserConstraintService userConstraintService;
+
     private final String encodedPassword = "encoded_password";
 
     @BeforeEach
@@ -36,6 +39,10 @@ class UserServiceImplTest_createAccount {
     @Test
     @DisplayName("Should create user successfully")
     void shouldCreateUserSuccessfully() {
+        doNothing()
+            .when(userConstraintService)
+            .checkUserAccountCreate(any());
+
         final var user = userService.createAccount(
             new UserInfoForCreateDTO(
                 "name",
@@ -50,5 +57,24 @@ class UserServiceImplTest_createAccount {
         assertEquals(savedUser.getName(), user.getName());
         assertEquals(savedUser.getEmail(), user.getEmail());
         assertEquals(savedUser.getPassword(), encodedPassword);
+    }
+
+    @Test
+    @DisplayName("Should throw exception if parameters not valid")
+    void shouldThrowExceptionIfParametersNotValid() {
+        doThrow(new CustomConstraintViolationException())
+            .when(userConstraintService)
+            .checkUserAccountCreate(any());
+
+        assertThrows(
+            CustomConstraintViolationException.class,
+            () -> userConstraintService.checkUserAccountCreate(
+                new UserInfoForCreateDTO(
+                    "someName",
+                    "someEmail@mail.ru",
+                    "password"
+                )
+            )
+        );
     }
 }

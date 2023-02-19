@@ -1,5 +1,6 @@
 package com.example.kameleoontechnicaltask.controller.error;
 
+import com.example.kameleoontechnicaltask.exceprion.CustomConstraintViolationException;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,6 +47,12 @@ public class RestExceptionResolver extends ResponseEntityExceptionHandler {
             HttpStatus.BAD_REQUEST,
             "Request parameters are wrong!"
         );
+    }
+
+    @ExceptionHandler(CustomConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ResponseEntity<ApiError> handleCustomConstraintViolationException(CustomConstraintViolationException ex) {
+        return innerHandleException(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     @ExceptionHandler(Exception.class)

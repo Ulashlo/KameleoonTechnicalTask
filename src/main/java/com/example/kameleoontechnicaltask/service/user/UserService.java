@@ -2,6 +2,7 @@ package com.example.kameleoontechnicaltask.service.user;
 
 import com.example.kameleoontechnicaltask.controller.dto.user.AccountInfoDTO;
 import com.example.kameleoontechnicaltask.controller.dto.user.UserInfoForCreateDTO;
+import com.example.kameleoontechnicaltask.exceprion.CustomConstraintViolationException;
 import com.example.kameleoontechnicaltask.model.UserEntity;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -19,6 +20,7 @@ public interface UserService {
      *
      * @param infoForCreate contains user's information
      * @return new account's info with access token
+     * @throws CustomConstraintViolationException if it is impossible to create user with given params
      */
     AccountInfoDTO createAccount(UserInfoForCreateDTO infoForCreate);
 
