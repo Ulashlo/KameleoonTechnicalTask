@@ -1,11 +1,13 @@
 package com.example.kameleoontechnicaltask.controller.dto.quote;
 
 import com.example.kameleoontechnicaltask.model.InnerVoteType;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
 
+@Schema(enumAsRef = true)
 public enum VoteType {
     UPVOTE,
     DOWNVOTE,

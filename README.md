@@ -11,6 +11,9 @@
 * H2 database
 * JUnit5
 
+## OpenAPI documentation:
+
+https://app.swaggerhub.com/apis-docs/Ulashlo/KameleoonTechnicalTaskApi/1.0
 
 ## Docker-compose file for deploy:
 

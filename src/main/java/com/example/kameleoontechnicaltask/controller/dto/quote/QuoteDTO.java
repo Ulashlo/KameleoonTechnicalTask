@@ -1,6 +1,7 @@
 package com.example.kameleoontechnicaltask.controller.dto.quote;
 
 import com.example.kameleoontechnicaltask.controller.dto.user.UserLinkDTO;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -17,6 +18,7 @@ import static java.util.Optional.ofNullable;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(title = "Quote full info")
 public class QuoteDTO {
     @NotNull
     private Long id;

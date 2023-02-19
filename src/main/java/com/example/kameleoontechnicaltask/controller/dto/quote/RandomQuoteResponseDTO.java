@@ -1,5 +1,6 @@
 package com.example.kameleoontechnicaltask.controller.dto.quote;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,6 +13,7 @@ import static java.util.Optional.ofNullable;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Schema(title = "Response with random quote")
 public class RandomQuoteResponseDTO {
     private Boolean isFound;
     private QuoteDTO randomQuote;
