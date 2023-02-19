@@ -24,7 +24,7 @@ https://app.swaggerhub.com/apis-docs/Ulashlo/KameleoonTechnicalTaskApi/1.0
 version: '3.8'
 services:
   server:
-    image: vanikolsky/kameleoon_task_image_test
+    image: vanikolsky/kameleoon-trial-task
     container_name: server
     ports:
       - "8080:8080"
