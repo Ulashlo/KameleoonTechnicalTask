@@ -1,0 +1,7 @@
+version: '3.8'
+services:
+  server:
+    image: vanikolsky/kameleoon_task_image_test
+    container_name: server
+    ports:
+      - "8080:8080"
