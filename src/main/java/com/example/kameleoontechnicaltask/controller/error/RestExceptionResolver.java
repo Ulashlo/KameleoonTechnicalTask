@@ -2,6 +2,8 @@ package com.example.kameleoontechnicaltask.controller.error;
 
 import com.example.kameleoontechnicaltask.exceprion.CustomConstraintViolationException;
 import jakarta.validation.ConstraintViolationException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -16,28 +18,30 @@ import java.util.NoSuchElementException;
 
 @ControllerAdvice
 public class RestExceptionResolver extends ResponseEntityExceptionHandler {
+    private final Log log = LogFactory.getLog(getClass());
+
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    protected ResponseEntity<ApiError> handleAccessDeniedException() {
-        return innerHandleException(HttpStatus.FORBIDDEN, "Access denied!");
+    protected ResponseEntity<ApiError> handleAccessDeniedException(AccessDeniedException ex) {
+        return innerHandleException(HttpStatus.FORBIDDEN, "Access denied!", ex);
     }
 
     @ExceptionHandler(NoSuchElementException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     protected ResponseEntity<ApiError> handleWrongCredentialsException(NoSuchElementException ex) {
-        return innerHandleException(HttpStatus.NOT_FOUND, ex.getMessage());
+        return innerHandleException(HttpStatus.NOT_FOUND, ex.getMessage(), ex);
     }
 
     @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     protected ResponseEntity<ApiError> handleAuthenticationCredentialsNotFoundException(AuthenticationCredentialsNotFoundException ex) {
-        return innerHandleException(HttpStatus.UNAUTHORIZED, ex.getMessage());
+        return innerHandleException(HttpStatus.UNAUTHORIZED, ex.getMessage(), ex);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     protected ResponseEntity<ApiError> handleBadCredentialsException(BadCredentialsException ex) {
-        return innerHandleException(HttpStatus.UNAUTHORIZED, ex.getMessage());
+        return innerHandleException(HttpStatus.UNAUTHORIZED, ex.getMessage(), ex);
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
@@ -45,27 +49,29 @@ public class RestExceptionResolver extends ResponseEntityExceptionHandler {
     protected ResponseEntity<ApiError> handleConstraintViolationException(ConstraintViolationException ex) {
         return innerHandleException(
             HttpStatus.BAD_REQUEST,
-            "Request parameters are wrong!"
+            "Request parameters are wrong!",
+            ex
         );
     }
 
     @ExceptionHandler(CustomConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ResponseEntity<ApiError> handleCustomConstraintViolationException(CustomConstraintViolationException ex) {
-        return innerHandleException(HttpStatus.BAD_REQUEST, ex.getMessage());
+        return innerHandleException(HttpStatus.BAD_REQUEST, ex.getMessage(), ex);
     }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     private ResponseEntity<ApiError> handleThrowable(Exception ex) {
-        ex.printStackTrace();
         return innerHandleException(
             HttpStatus.INTERNAL_SERVER_ERROR,
-            String.format("Unknown exception! \n%s \n%s", ex.getClass().getName(), ex.getMessage())
+            String.format("Unknown exception! \n%s \n%s", ex.getClass().getName(), ex.getMessage()),
+            ex
         );
     }
 
-    private ResponseEntity<ApiError> innerHandleException(HttpStatus status, String message) {
+    private ResponseEntity<ApiError> innerHandleException(HttpStatus status, String message, Exception ex) {
+        log.error(message, ex);
         final var error = ApiError.createError(status, message);
         return new ResponseEntity<>(error, status);
     }

@@ -1,6 +1,6 @@
 package com.example.kameleoontechnicaltask.service.quote;
 
-import com.example.kameleoontechnicaltask.controller.dto.quote.QuoteDTO;
+import com.example.kameleoontechnicaltask.controller.dto.quote.QuoteWithScoreDynamicDTO;
 import com.example.kameleoontechnicaltask.controller.dto.quote.RandomQuoteResponseDTO;
 import com.example.kameleoontechnicaltask.controller.dto.quote.VoteScoreDTO;
 import com.example.kameleoontechnicaltask.controller.dto.user.UserLinkDTO;
@@ -10,6 +10,8 @@ import com.example.kameleoontechnicaltask.repository.query.QuoteInfoWithUsersLas
 import com.example.kameleoontechnicaltask.repository.query.QuoteScoreGroupByDate;
 import com.example.kameleoontechnicaltask.service.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,32 +45,46 @@ public class QuoteViewServiceImpl implements QuoteViewService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<QuoteDTO> getTopQuotes(Integer limit) {
+    public List<QuoteWithScoreDynamicDTO> getTopQuotes(Integer limit) {
         final var topQuoteIds = quoteRepository.findTopQuoteIds(limit);
         return getQuoteDTOListByIds(topQuoteIds).stream()
-            .sorted(Comparator.comparing(QuoteDTO::getScore).reversed())
+            .sorted(Comparator.comparing(QuoteWithScoreDynamicDTO::getScore).reversed())
             .toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<QuoteDTO> getFlopQuotes(Integer limit) {
+    public List<QuoteWithScoreDynamicDTO> getFlopQuotes(Integer limit) {
         final var flopQuoteIds = quoteRepository.findFlopQuoteIds(limit);
         return getQuoteDTOListByIds(flopQuoteIds).stream()
-            .sorted(Comparator.comparing(QuoteDTO::getScore))
+            .sorted(Comparator.comparing(QuoteWithScoreDynamicDTO::getScore))
             .toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<QuoteDTO> getLastQuotes(Integer limit) {
-        final var lastQuoteIds = quoteRepository.findLastQuoteIds(limit);
-        return getQuoteDTOListByIds(lastQuoteIds).stream()
-            .sorted(Comparator.comparing(QuoteDTO::getDateOfCreation).reversed())
+    public List<QuoteWithScoreDynamicDTO> getLastQuotes(Integer pageNum, Integer pageSize) {
+        final var lastQuoteIds = quoteRepository.findQuoteIdsWithPagination(
+            PageRequest.of(
+                pageNum,
+                pageSize,
+                Sort.by("dateOfCreation").descending()
+            )
+        );
+        return getQuoteDTOListByIds(lastQuoteIds);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<QuoteWithScoreDynamicDTO> getMyQuotes() {
+        final var currentUser = userService.getCurrentAuthenticatedUser();
+        final var myQuoteIds = quoteRepository.findUsersQuoteIds(currentUser);
+        return getQuoteDTOListByIds(myQuoteIds).stream()
+            .sorted(Comparator.comparing(QuoteWithScoreDynamicDTO::getDateOfCreation).reversed())
             .toList();
     }
 
-    private List<QuoteDTO> getQuoteDTOListByIds(List<Long> ids) {
+    private List<QuoteWithScoreDynamicDTO> getQuoteDTOListByIds(List<Long> ids) {
         final var currentUserId = userService.getCurrentUser().map(UserEntity::getId).orElse(null);
         final var quoteInfoWithUsersLastVotes = quoteRepository.findQuotesInfoWithUsersLastVoteByIds(
             ids,
@@ -86,9 +102,9 @@ public class QuoteViewServiceImpl implements QuoteViewService {
             }).collect(Collectors.toList());
     }
 
-    private QuoteDTO createQuoteDTO(QuoteInfoWithUsersLastVote quoteInfoWithUsersLastVotes,
-                                    List<QuoteScoreGroupByDate> quoteScoreGroupByDates) {
-        return new QuoteDTO(
+    private QuoteWithScoreDynamicDTO createQuoteDTO(QuoteInfoWithUsersLastVote quoteInfoWithUsersLastVotes,
+                                                    List<QuoteScoreGroupByDate> quoteScoreGroupByDates) {
+        return new QuoteWithScoreDynamicDTO(
             quoteInfoWithUsersLastVotes.getId(),
             quoteInfoWithUsersLastVotes.getContent(),
             new UserLinkDTO(

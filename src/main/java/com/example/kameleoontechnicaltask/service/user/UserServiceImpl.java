@@ -5,6 +5,8 @@ import com.example.kameleoontechnicaltask.controller.dto.user.UserInfoForCreateD
 import com.example.kameleoontechnicaltask.model.UserEntity;
 import com.example.kameleoontechnicaltask.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
@@ -23,6 +25,7 @@ import static java.lang.String.format;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+    private final Log log = LogFactory.getLog(getClass());
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final AccessTokenService accessTokenService;
@@ -41,6 +44,7 @@ public class UserServiceImpl implements UserService {
                 )
             )
         );
+        log.info(format("User with id = %d was created", user.getId()));
         return getAccountInfo(user, infoForCreate.getPassword());
     }
 

@@ -7,14 +7,19 @@ import com.example.kameleoontechnicaltask.repository.QuoteRepository;
 import com.example.kameleoontechnicaltask.repository.VoteRepository;
 import com.example.kameleoontechnicaltask.service.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
 
+import static java.lang.String.format;
+
 @Service
 @RequiredArgsConstructor
 public class VoteServiceImpl implements VoteService {
+    private final Log log = LogFactory.getLog(getClass());
     private final VoteRepository voteRepository;
     private final QuoteRepository quoteRepository;
     private final UserService userService;
@@ -47,6 +52,14 @@ public class VoteServiceImpl implements VoteService {
         quoteRepository.saveAndFlush(quote);
         voteRepository.saveAndFlush(
             new Vote(resultVoteType, user, quote)
+        );
+        log.info(
+            format(
+                "User with id = %d was created vote status on %s on quote with id = %d ",
+                user.getId(),
+                voteType.name(),
+                quote.getId()
+            )
         );
     }
 }

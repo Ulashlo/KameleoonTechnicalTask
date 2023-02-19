@@ -1,8 +1,10 @@
 package com.example.kameleoontechnicaltask.repository;
 
 import com.example.kameleoontechnicaltask.model.Quote;
+import com.example.kameleoontechnicaltask.model.UserEntity;
 import com.example.kameleoontechnicaltask.repository.query.QuoteInfoWithUsersLastVote;
 import com.example.kameleoontechnicaltask.repository.query.QuoteScoreGroupByDate;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -67,6 +69,9 @@ public interface QuoteRepository extends JpaRepository<Quote, Long> {
     @Query(value = "select id from quote order by score limit :lim", nativeQuery = true)
     List<Long> findFlopQuoteIds(@Param("lim") Integer limit);
 
-    @Query(value = "select id from quote order by date_of_creation desc limit :lim", nativeQuery = true)
-    List<Long> findLastQuoteIds(@Param("lim") Integer limit);
+    @Query(value = "select id from Quote where userWhoCreated = :user")
+    List<Long> findUsersQuoteIds(@Param("user") UserEntity user);
+
+    @Query(value = "select id from Quote")
+    List<Long> findQuoteIdsWithPagination(Pageable pageable);
 }

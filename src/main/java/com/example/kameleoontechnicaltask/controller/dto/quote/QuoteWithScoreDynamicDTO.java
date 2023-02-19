@@ -18,8 +18,8 @@ import static java.util.Optional.ofNullable;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(title = "Quote full info")
-public class QuoteDTO {
+@Schema(title = "Quote info with score dynamic")
+public class QuoteWithScoreDynamicDTO {
     @NotNull
     private Long id;
 
@@ -39,7 +39,7 @@ public class QuoteDTO {
     private Integer score;
 
     @NotNull
-    private VoteType usersVoteType;
+    private VoteType currentUserVoteType;
 
     @NotNull
     private List<VoteScoreDTO> scoreChangeDynamics;

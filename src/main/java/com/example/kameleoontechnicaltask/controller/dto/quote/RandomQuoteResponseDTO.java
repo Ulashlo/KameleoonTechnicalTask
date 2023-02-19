@@ -16,9 +16,9 @@ import static java.util.Optional.ofNullable;
 @Schema(title = "Response with random quote")
 public class RandomQuoteResponseDTO {
     private Boolean isFound;
-    private QuoteDTO randomQuote;
+    private QuoteWithScoreDynamicDTO randomQuote;
 
-    public Optional<QuoteDTO> getRandomQuote() {
+    public Optional<QuoteWithScoreDynamicDTO> getRandomQuote() {
         return ofNullable(randomQuote);
     }
 
@@ -29,7 +29,7 @@ public class RandomQuoteResponseDTO {
         );
     }
 
-    public static RandomQuoteResponseDTO createResponse(QuoteDTO quote) {
+    public static RandomQuoteResponseDTO createResponse(QuoteWithScoreDynamicDTO quote) {
         return new RandomQuoteResponseDTO(
             true,
             quote

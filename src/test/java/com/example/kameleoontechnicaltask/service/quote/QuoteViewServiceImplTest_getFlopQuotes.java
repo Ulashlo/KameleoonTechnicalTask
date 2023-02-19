@@ -1,6 +1,6 @@
 package com.example.kameleoontechnicaltask.service.quote;
 
-import com.example.kameleoontechnicaltask.controller.dto.quote.QuoteDTO;
+import com.example.kameleoontechnicaltask.controller.dto.quote.QuoteWithScoreDynamicDTO;
 import com.example.kameleoontechnicaltask.controller.dto.quote.VoteScoreDTO;
 import com.example.kameleoontechnicaltask.controller.dto.quote.VoteType;
 import com.example.kameleoontechnicaltask.model.InnerVoteType;
@@ -160,12 +160,12 @@ class QuoteViewServiceImplTest_getFlopQuotes {
         checkQuoteDateScore(firstScoreChangeDynamics.get(5), defaultDate.toLocalDate(), -2);
     }
 
-    private void checkQuoteInfo(QuoteDTO quoteDTO, Quote quote, VoteType usersVoteType) {
-        assertEquals(quote.getId(), quoteDTO.getId());
-        assertEquals(quote.getScore(), quoteDTO.getScore());
-        assertEquals(quote.getContent(), quoteDTO.getContent());
-        assertEquals(quote.getUserWhoCreated().getId(), quoteDTO.getUserWhoCreated().getId());
-        assertEquals(usersVoteType, quoteDTO.getUsersVoteType());
+    private void checkQuoteInfo(QuoteWithScoreDynamicDTO quoteWithScoreDynamicDTO, Quote quote, VoteType usersVoteType) {
+        assertEquals(quote.getId(), quoteWithScoreDynamicDTO.getId());
+        assertEquals(quote.getScore(), quoteWithScoreDynamicDTO.getScore());
+        assertEquals(quote.getContent(), quoteWithScoreDynamicDTO.getContent());
+        assertEquals(quote.getUserWhoCreated().getId(), quoteWithScoreDynamicDTO.getUserWhoCreated().getId());
+        assertEquals(usersVoteType, quoteWithScoreDynamicDTO.getCurrentUserVoteType());
     }
 
     private void checkQuoteDateScore(VoteScoreDTO voteScoreDTO, LocalDate date, Integer score) {
