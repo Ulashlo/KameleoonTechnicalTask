@@ -3,6 +3,7 @@ package com.example.kameleoontechnicaltask.controller.error;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -14,6 +15,12 @@ import java.util.NoSuchElementException;
 
 @ControllerAdvice
 public class RestExceptionResolver extends ResponseEntityExceptionHandler {
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    protected ResponseEntity<ApiError> handleAccessDeniedException() {
+        return innerHandleException(HttpStatus.FORBIDDEN, "Access denied!");
+    }
+
     @ExceptionHandler(NoSuchElementException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     protected ResponseEntity<ApiError> handleWrongCredentialsException(NoSuchElementException ex) {
@@ -44,6 +51,7 @@ public class RestExceptionResolver extends ResponseEntityExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     private ResponseEntity<ApiError> handleThrowable(Exception ex) {
+        ex.printStackTrace();
         return innerHandleException(
             HttpStatus.INTERNAL_SERVER_ERROR,
             String.format("Unknown exception! \n%s \n%s", ex.getClass().getName(), ex.getMessage())

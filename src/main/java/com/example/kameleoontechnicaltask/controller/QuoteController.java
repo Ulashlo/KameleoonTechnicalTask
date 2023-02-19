@@ -8,6 +8,7 @@ import com.example.kameleoontechnicaltask.service.vote.VoteService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +27,7 @@ public class QuoteController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("@QuoteAccessService.hasAccessToEditOrDeleteQuote(authentication, #id)")
     public void updateQuote(@RequestBody
                             @Valid QuoteInfoForUpdateDTO infoForUpdate,
                             @PathVariable("id")
@@ -34,6 +36,7 @@ public class QuoteController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("@QuoteAccessService.hasAccessToEditOrDeleteQuote(authentication, #id)")
     public void deleteQuote(@PathVariable("id")
                             @NotNull Long id) {
         quoteService.deleteQuote(id);

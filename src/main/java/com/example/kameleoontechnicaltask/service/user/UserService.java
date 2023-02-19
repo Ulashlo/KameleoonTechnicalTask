@@ -5,6 +5,7 @@ import com.example.kameleoontechnicaltask.controller.dto.user.UserInfoForCreateD
 import com.example.kameleoontechnicaltask.model.UserEntity;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -30,6 +31,15 @@ public interface UserService {
      * @throws BadCredentialsException if password or username is wrong
      */
     AccountInfoDTO login(String name, String password);
+
+    /**
+     * Return authenticated user's info by {@linkplain Authentication}.
+     *
+     * @return user's info
+     * @throws AuthenticationCredentialsNotFoundException if there are no authenticated users
+     * @throws NoSuchElementException                     if there are no users with name from credentials
+     */
+    UserEntity getUserFromAuthentication(Authentication authentication);
 
     /**
      * Return authenticated user's info.

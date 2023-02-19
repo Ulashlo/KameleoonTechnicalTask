@@ -79,7 +79,7 @@ public class QuoteViewServiceImpl implements QuoteViewService {
             .collect(Collectors.groupingBy(QuoteScoreGroupByDate::getId));
         return quoteInfoWithUsersLastVotes.stream()
             .map(info -> {
-                final var scores = quotesScoreMap.get(info.getId()).stream()
+                final var scores = quotesScoreMap.getOrDefault(info.getId(), List.of()).stream()
                     .sorted(Comparator.comparing(QuoteScoreGroupByDate::getDate))
                     .toList();
                 return createQuoteDTO(info, scores);

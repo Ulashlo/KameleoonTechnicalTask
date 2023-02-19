@@ -7,6 +7,7 @@ import com.example.kameleoontechnicaltask.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -54,25 +55,26 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
+    public UserEntity getUserFromAuthentication(Authentication authentication) {
+        return innerGetUserFromAuthentication(authentication)
+            .orElseThrow(
+                () -> new AuthenticationCredentialsNotFoundException(
+                    "User has not been authenticated yet"
+                )
+            );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Optional<UserEntity> getCurrentUser() {
         final var authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (Objects.isNull(authentication) ||
-            !(authentication.getPrincipal() instanceof final UserDetails userDetails)) {
-            return Optional.empty();
-        }
-        final var user = userRepository.findByName(userDetails.getUsername()).orElseThrow(
-            () -> new NoSuchElementException(format("No user with name = %s", userDetails.getUsername()))
-        );
-        return Optional.of(user);
+        return innerGetUserFromAuthentication(authentication);
     }
 
     @Override
     public UserEntity getCurrentAuthenticatedUser() {
-        return getCurrentUser().orElseThrow(
-            () -> new AuthenticationCredentialsNotFoundException(
-                "User has not been authenticated yet"
-            )
-        );
+        final var authentication = SecurityContextHolder.getContext().getAuthentication();
+        return getUserFromAuthentication(authentication);
     }
 
     private AccountInfoDTO getAccountInfo(UserEntity user, String rawPassword) {
@@ -82,5 +84,16 @@ public class UserServiceImpl implements UserService {
             accessTokenService.generateAccessToken(user.getName(), rawPassword),
             user.getDateOfCreation()
         );
+    }
+
+    private Optional<UserEntity> innerGetUserFromAuthentication(Authentication authentication) {
+        if (Objects.isNull(authentication) ||
+            !(authentication.getPrincipal() instanceof final UserDetails userDetails)) {
+            return Optional.empty();
+        }
+        final var user = userRepository.findByName(userDetails.getUsername()).orElseThrow(
+            () -> new NoSuchElementException(format("No user with name = %s", userDetails.getUsername()))
+        );
+        return Optional.of(user);
     }
 }
