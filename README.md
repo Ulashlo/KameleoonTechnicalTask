@@ -1,15 +1,18 @@
 # KameleoonTechnicalTask
 
+## Service for publishing quotes
+
 ## Technology stack:
 
 * Spring boot
   * Spring Data JPA
   * Spring Web
   * Spring Security
-  * Spring Secirity Test
+  * Spring Security Test
 * Lombok
 * H2 database
 * JUnit5
+* OpenAPI
 
 ## OpenAPI documentation:
 
