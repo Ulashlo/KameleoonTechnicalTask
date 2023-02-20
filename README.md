@@ -18,6 +18,8 @@
 
 https://app.swaggerhub.com/apis-docs/Ulashlo/KameleoonTechnicalTaskApi/1.0
 
+Or locally, after startind the server: http://localhost:8080/swagger-ui/index.html 
+
 ## Docker-compose file for deploy:
 
 ```
